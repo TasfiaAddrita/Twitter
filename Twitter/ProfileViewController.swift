@@ -25,9 +25,9 @@ class ProfileViewController: UIViewController {
 
         headerImageView.setImageWithURL((tweet?.user?.profileBannerURL)!)
         profileImageView.setImageWithURL((tweet?.user?.profileUrl)!)
-        nameLabel.text = tweet?.user?.name as! String
-        usernameLabel.text = tweet?.user?.screenname as! String
-        descriptionLabel.text = tweet?.user?.userDescription as! String
+        nameLabel.text = (tweet?.user?.name as! String)
+        usernameLabel.text = "@\(tweet?.user?.screenname as! String)"
+        descriptionLabel.text = (tweet?.user?.userDescription as! String)
         followingCountLabel.text = "\(tweet!.user!.followingCount!) FOLLOWING"
         followerCountLabel.text = "\(tweet!.user!.followerCount!) FOLLOWERS"
         

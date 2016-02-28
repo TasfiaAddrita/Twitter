@@ -87,11 +87,18 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
         
-        let cell = sender as! UITableViewCell
-        let indexPath = tableView.indexPathForCell(cell)
-        let tweet = tweets![indexPath!.row]
+        let bonus = (sender is UITableViewCell ? true : false)
         
-        let tweetDetailsViewController = segue.destinationViewController as! TweetDetailsViewController
-        tweetDetailsViewController.tweet = tweet
+        if bonus {
+            let cell = sender as! UITableViewCell
+            let indexPath = tableView.indexPathForCell(cell)
+            let tweet = tweets![indexPath!.row]
+            
+            let tweetDetailsViewController = segue.destinationViewController as! TweetDetailsViewController
+            tweetDetailsViewController.tweet = tweet
+        }
+        else {
+            
+        }
     }
 }

@@ -33,9 +33,9 @@ class TweetDetailsViewController: UIViewController {
         super.viewDidLoad()
 
         profileImageView.setImageWithURL((tweet!.user?.profileUrl)!)
-        nameLabel.text = tweet?.user?.name as! String
+        nameLabel.text = (tweet?.user?.name as! String)
         userNameLabel.text = "@\(tweet?.user?.screenname as! String)"
-        tweetContentLabel.text = tweet?.text as! String
+        tweetContentLabel.text = (tweet?.text as! String)
         timeStampLabel.text = tweet?.timeSince
         retweetCountLabel.text = "\(tweet!.retweetCount) RETWEETS"
         likeCountLabel.text = "\(tweet!.favoriteCount) LIKES"
