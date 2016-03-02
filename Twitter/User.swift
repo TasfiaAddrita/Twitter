@@ -8,6 +8,8 @@
 
 import UIKit
 
+let userDidLogoutNotification = "userDidLogoutNotification"
+
 class User: NSObject {
 
     var name: NSString?
@@ -26,12 +28,14 @@ class User: NSObject {
         name = dictionary["name"] as? String
         screenname = dictionary["screen_name"] as? String
         
-        let profileUrlString = dictionary["profile_image_url_https"] as? String
-        if let profileUrlString = profileUrlString {
-            profileUrl = NSURL(string: profileUrlString)
+        var profileUrlString = dictionary["profile_image_url"] as! String
+        let range = profileUrlString.rangeOfString("_normal\\.", options: .RegularExpressionSearch)
+        if let range = range {
+            profileUrlString = profileUrlString.stringByReplacingCharactersInRange(range, withString: "_bigger.")
         }
+        self.profileUrl = NSURL(string: profileUrlString)
         
-        let profileBannerString = dictionary["profile_background_image_url_https"] as? String
+        let profileBannerString = dictionary["profile_banner_url"] as? String
         if let profileBannerString = profileBannerString {
             profileBannerURL = NSURL(string: profileBannerString)
         }

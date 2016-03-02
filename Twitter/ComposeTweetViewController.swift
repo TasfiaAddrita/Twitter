@@ -8,6 +8,10 @@
 
 import UIKit
 
+@objc protocol ComposeViewControllerDelegate {
+    optional func composeViewController(composeViewController: ComposeTweetViewController)
+}
+
 class ComposeTweetViewController: UIViewController, UITextViewDelegate {
 
     @IBOutlet weak var profileImageView: UIImageView!
@@ -19,6 +23,8 @@ class ComposeTweetViewController: UIViewController, UITextViewDelegate {
     let onEditTextField = UITapGestureRecognizer()
     let onEndEditing = UITapGestureRecognizer()
     
+    var replyID : Int?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -26,12 +32,12 @@ class ComposeTweetViewController: UIViewController, UITextViewDelegate {
 
         profileImageView.setImageWithURL((User.currentUser?.profileUrl)!)
         nameLabel.text = (User.currentUser?.name as! String)
-        userNameLabel.text = (User.currentUser?.screenname as! String)
+        userNameLabel.text = "@\(User.currentUser?.screenname as! String)"
         
-        profileImageView.layer.cornerRadius = 5
-        profileImageView.clipsToBounds = true
+        //profileImageView.layer.cornerRadius = 5
+        //profileImageView.clipsToBounds = true
         
-        tweetTextView.text = "What's Happening..."
+        tweetTextView.text = "What's Happening?"
         tweetTextView.textColor = UIColor.lightGrayColor()
         
         onEditTextField.addTarget(self, action: "textViewDidBeginEditing")
@@ -69,6 +75,20 @@ class ComposeTweetViewController: UIViewController, UITextViewDelegate {
     
     func textViewDidEndEditing() {
         self.view.endEditing(true)
+    }
+    
+    @IBAction func onTweet(sender: AnyObject) {
+        
+        var tweetStatus =  "?status=" + tweetTextView.text!.stringByReplacingOccurrencesOfString(" ", withString: "%20", options: NSStringCompareOptions.LiteralSearch, range: nil)
+        
+        /*if (replyID != nil) {
+            tweetStatus += "&in_reply_to_status_id=\(replyID!)"
+        }*/
+        
+        TwitterClient.sharedInstance.postTweet(tweetStatus)
+        //User.currentUser.tweeted()
+        
+        dismissViewControllerAnimated(true, completion: nil)
     }
     
     @IBAction func onCancel(sender: AnyObject) {

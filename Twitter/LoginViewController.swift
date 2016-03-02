@@ -39,7 +39,6 @@ class LoginViewController: UIViewController {
                 print("error: \(error.localizedDescription)")
         }
     }
-    
 
     /*
     // MARK: - Navigation

@@ -14,6 +14,17 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
     
     var tweets: [Tweet]!
     
+    var isMoreDataLoading = false
+    var loadingMoreView: InfiniteScrollActivityView?
+    var offset: Int? = 20
+    var tweetIdLast: Int!
+    
+    var apiParameters : [String: Int] {
+        get {
+            return ["max_id": tweetIdLast, "count": offset!]
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -29,8 +40,18 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
         refreshControl.addTarget(self, action: "refreshControlAction:", forControlEvents: UIControlEvents.ValueChanged)
         tableView.insertSubview(refreshControl, atIndex: 0)
         
-        TwitterClient.sharedInstance.homeTimeline({ (tweets: [Tweet]) -> () in
+        let frame = CGRectMake(0, tableView.contentSize.height, tableView.bounds.size.width, InfiniteScrollActivityView.defaultHeight)
+        loadingMoreView = InfiniteScrollActivityView(frame: frame)
+        loadingMoreView!.hidden = true
+        tableView.addSubview(loadingMoreView!)
+        
+        var insets = tableView.contentInset
+        insets.bottom += InfiniteScrollActivityView.defaultHeight
+        tableView.contentInset = insets
+        
+        TwitterClient.sharedInstance.homeTimeline(nil, success: { (tweets: [Tweet]) -> () in
             self.tweets = tweets
+            self.tweetIdLast = self.tweets[self.tweets.count - 1].id!
             self.tableView.reloadData()
             
             for tweet in tweets {
@@ -61,17 +82,53 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
         
         cell.selectionStyle = .None
         cell.tweet = tweets[indexPath.row]
+        //tweetIdLast = tweets[indexPath.row].id!
         
         print(indexPath.row)
         return cell
     }
     
     func refreshControlAction(refreshControl: UIRefreshControl) {
-        TwitterClient.sharedInstance.homeTimeline({ (tweet: [Tweet]) -> () in
+        TwitterClient.sharedInstance.homeTimeline(nil, success: { (tweet: [Tweet]) -> () in
             self.tweets = tweet
             self.tableView.reloadData()
             refreshControl.endRefreshing()
             }) { (error: NSError) -> () in
+        }
+    }
+    
+    func scrollViewDidScroll(scrollView: UIScrollView) {
+        if (!isMoreDataLoading) {
+            // Calculate the position of one screen length before the bottom of the results
+            let scrollViewContentHeight = tableView.contentSize.height
+            let scrollOffsetThreshold = scrollViewContentHeight - tableView.bounds.size.height
+            
+            // When the user has scrolled past the threshold, start requesting
+            if(scrollView.contentOffset.y > scrollOffsetThreshold && tableView.dragging) {
+                isMoreDataLoading = true
+                
+                // Update position of loadingMoreView, and start loading indicator
+                let frame = CGRectMake(0, tableView.contentSize.height, tableView.bounds.size.width, InfiniteScrollActivityView.defaultHeight)
+                loadingMoreView?.frame = frame
+                loadingMoreView!.startAnimating()
+                
+                // Code to load more results
+                loadData()
+            }
+        }
+    }
+
+    func loadData() {
+        TwitterClient.sharedInstance.getOlderTweets(self.tweetIdLast, success: { (success: [Tweet]) -> () in
+            
+            for tweet in success {
+                self.tweets.append(tweet)
+            }
+            
+            self.isMoreDataLoading = false
+            self.tableView.reloadData()
+            }) { (error: NSError) -> () in
+                print(error.description)
         }
     }
     
@@ -87,9 +144,8 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
         
-        let bonus = (sender is UITableViewCell ? true : false)
-        
-        if bonus {
+        if segue.identifier == "viewTweetDetails" {
+            
             let cell = sender as! UITableViewCell
             let indexPath = tableView.indexPathForCell(cell)
             let tweet = tweets![indexPath!.row]
@@ -97,8 +153,17 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
             let tweetDetailsViewController = segue.destinationViewController as! TweetDetailsViewController
             tweetDetailsViewController.tweet = tweet
         }
-        else {
+        
+        if segue.identifier == "viewUserProfile" {
             
+            let profPic = sender as! UIButton
+            let cell = profPic.superview!.superview as! UITableViewCell
+            
+            let indexPath = tableView.indexPathForCell(cell)
+            let tweet = tweets![(indexPath?.row)!]
+            
+            let profileViewController = segue.destinationViewController as? ProfileViewController
+            profileViewController!.tweet = tweet
         }
     }
 }

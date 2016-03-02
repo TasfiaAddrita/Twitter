@@ -1,5 +1,5 @@
 //
-//  TweetCell.swift
+//  ProfileCell.swift
 //  Twitter
 //
 //  Created by Tasfia Addrita on 2/28/16.
@@ -8,21 +8,21 @@
 
 import UIKit
 
-class TweetCell: UITableViewCell {
-    
+class ProfileCell: UITableViewCell {
+
     @IBOutlet weak var profileImageView: UIImageView!
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var userNameLabel: UILabel!
-    @IBOutlet weak var tweetContentLabel: UILabel!
+    @IBOutlet weak var timeStampLabel: UILabel!
     @IBOutlet weak var replyImageView: UIImageView!
     @IBOutlet weak var retweetImageView: UIImageView!
     @IBOutlet weak var likeImageView: UIImageView!
-    @IBOutlet weak var timePostedLabel: UILabel!
     @IBOutlet weak var retweetCountLabel: UILabel!
     @IBOutlet weak var likeCountLabel: UILabel!
+    @IBOutlet weak var tweetContentLabel: UILabel!
     
-    var isLiked : Bool = false
-    var isRetweeted : Bool = false
+    var isFavorited = false
+    var isRetweeted = false
     
     let retweetTapRec = UITapGestureRecognizer()
     let likeTapRec = UITapGestureRecognizer()
@@ -30,9 +30,6 @@ class TweetCell: UITableViewCell {
     
     var tweet: Tweet! {
         didSet {
-            
-            isRetweeted = tweet.isRetweeted!
-            isLiked = tweet.isLiked!
             
             if (tweet.user?.profileUrl != nil) {
                 profileImageView.setImageWithURL((tweet.user?.profileUrl)!)
@@ -42,21 +39,18 @@ class TweetCell: UITableViewCell {
             nameLabel.text = tweet.user?.name as? String
             userNameLabel.text = "@\(tweet.user!.screenname!)"
             tweetContentLabel.text = tweet.text as? String
-            timePostedLabel.text = tweet.timeSince
             replyImageView.image = UIImage(named: "reply_button")
+            retweetImageView.image = UIImage(named: "retweet_button")
+            likeImageView.image = UIImage(named: "like_button")
+            timeStampLabel.text = tweet.timeSince
+            retweetCountLabel.text = String(tweet.retweetCount)
+            likeCountLabel.text = String(tweet.favoriteCount)
             
-            if isRetweeted {
-                retweetImageView.image = UIImage(named: "retweet_button_active")
+            if likeCountLabel.text == "0" {
+                likeCountLabel.hidden = true
             }
-            else {
-                retweetImageView.image = UIImage(named: "retweet_button")
-            }
-            
-            if isLiked {
-                likeImageView.image = UIImage(named: "like_button_active")
-            }
-            else {
-                likeImageView.image = UIImage(named: "like_button")
+            if retweetCountLabel.text == "0" {
+                retweetCountLabel.hidden = true
             }
             
             retweetTapRec.addTarget(self, action: "onRetweet")
@@ -65,8 +59,7 @@ class TweetCell: UITableViewCell {
             likeTapRec.addTarget(self, action: "onLike")
             likeImageView.addGestureRecognizer(likeTapRec)
             
-            retweetCountLabel.text = String(tweet.retweetCount)
-            likeCountLabel.text = String(tweet.favoriteCount)
+            //profileImageRec.addTarget(self, action: "onProfileImage")
         }
     }
     
@@ -77,48 +70,47 @@ class TweetCell: UITableViewCell {
         profileImageView.layer.cornerRadius = 5
         profileImageView.clipsToBounds = true
     }
-
+    
     override func setSelected(selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
+        
         // Configure the view for the selected state
     }
     
     func onRetweet() {
-        
         if !isRetweeted {
-            TwitterClient.sharedInstance.retweetTweet(tweet.id) { (tweets, error) -> () in }
-            
             isRetweeted = true
             retweetImageView.image = UIImage(named: "retweet_button_active")
+            if retweetCountLabel.text == "0" {
+                retweetCountLabel.hidden = false
+            }
             retweetCountLabel.text = String(tweet.retweetCount + 1)
-        }
-        
-        else {
-            TwitterClient.sharedInstance.unretweetTweet(tweet.id) { (tweets, error) -> () in }
-            
+        } else {
             isRetweeted = false
             retweetImageView.image = UIImage(named: "retweet_button")
+            if retweetCountLabel.text == "1" {
+                retweetCountLabel.hidden = true
+            }
             retweetCountLabel.text = String(tweet.retweetCount)
         }
     }
     
     func onLike() {
-        
-        if !isLiked {
-            TwitterClient.sharedInstance.favoriteTweet(tweet.id) { (tweets, error) -> () in }
-            
-            isLiked = true
+        if !isFavorited {
+            isFavorited = true
             likeImageView.image = UIImage(named: "like_button_active")
+            if likeCountLabel.text == "0" {
+                likeCountLabel.hidden = false
+            }
             likeCountLabel.text = String(tweet.favoriteCount + 1)
-        }
-        
-        else {
-            TwitterClient.sharedInstance.unfavoriteTweet(tweet.id) { (tweets, error) -> () in }
-            
-            isLiked = false
+        } else {
+            isFavorited = false
             likeImageView.image = UIImage(named: "like_button")
+            if likeCountLabel.text == "1" {
+                likeCountLabel.hidden = true
+            }
             likeCountLabel.text = String(tweet.favoriteCount)
         }
     }
+
 }

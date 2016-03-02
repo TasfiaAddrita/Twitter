@@ -61,7 +61,7 @@ class TweetDetailsViewController: UIViewController {
         
         // Do any additional setup after loading the view.
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -102,6 +102,4 @@ class TweetDetailsViewController: UIViewController {
         let profileViewController = segue.destinationViewController as! ProfileViewController
         profileViewController.tweet = tweet
     }
-    
-
 }
