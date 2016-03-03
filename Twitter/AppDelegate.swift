@@ -40,7 +40,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             self.window?.rootViewController = vc
             */
             
-            let vc = self.storyboard.instantiateViewControllerWithIdentifier("TweetsTabBarController") as UIViewController
+            let vc = self.storyboard.instantiateViewControllerWithIdentifier("LoginViewController") as UIViewController
             
             self.window?.rootViewController = vc
         }

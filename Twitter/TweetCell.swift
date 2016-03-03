@@ -45,6 +45,9 @@ class TweetCell: UITableViewCell {
             timePostedLabel.text = tweet.timeSince
             replyImageView.image = UIImage(named: "reply_button")
             
+            retweetCountLabel.text = String(tweet.retweetCount)
+            likeCountLabel.text = String(tweet.favoriteCount)
+            
             if isRetweeted {
                 retweetImageView.image = UIImage(named: "retweet_button_active")
             }
@@ -64,9 +67,6 @@ class TweetCell: UITableViewCell {
             
             likeTapRec.addTarget(self, action: "onLike")
             likeImageView.addGestureRecognizer(likeTapRec)
-            
-            retweetCountLabel.text = String(tweet.retweetCount)
-            likeCountLabel.text = String(tweet.favoriteCount)
         }
     }
     
@@ -99,7 +99,7 @@ class TweetCell: UITableViewCell {
             
             isRetweeted = false
             retweetImageView.image = UIImage(named: "retweet_button")
-            retweetCountLabel.text = String(tweet.retweetCount)
+            retweetCountLabel.text = String(tweet.retweetCount - 1)
         }
     }
     
@@ -118,7 +118,7 @@ class TweetCell: UITableViewCell {
             
             isLiked = false
             likeImageView.image = UIImage(named: "like_button")
-            likeCountLabel.text = String(tweet.favoriteCount)
+            likeCountLabel.text = String(tweet.favoriteCount - 1)
         }
     }
 }
