@@ -36,9 +36,6 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
         let image: UIImage = UIImage(named: "logo_smaller.png")!
         self.navigationItem.titleView = UIImageView(image: image)
         
-        self.navigationItem.rightBarButtonItem = nil
-        self.tabBarController?.tabBar.hidden = true
-        
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: "refreshControlAction:", forControlEvents: UIControlEvents.ValueChanged)
         tableView.insertSubview(refreshControl, atIndex: 0)
