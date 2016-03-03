@@ -26,7 +26,6 @@ class CurrentUserProfileCell: UITableViewCell {
     
     let retweetTapRec = UITapGestureRecognizer()
     let likeTapRec = UITapGestureRecognizer()
-    let profileImageRec = UITapGestureRecognizer()
     
     var tweet: Tweet! {
         didSet {

@@ -36,6 +36,8 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
         let image: UIImage = UIImage(named: "logo_smaller.png")!
         self.navigationItem.titleView = UIImageView(image: image)
         
+        self.tabBarController?.tabBar.tintColor = UIColor(red: 71/255, green: 141/255, blue: 227/255, alpha: 1)
+        
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: "refreshControlAction:", forControlEvents: UIControlEvents.ValueChanged)
         tableView.insertSubview(refreshControl, atIndex: 0)

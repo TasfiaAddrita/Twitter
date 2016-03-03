@@ -8,7 +8,7 @@
 
 import UIKit
 
-let userDidLogoutNotification = "userDidLogoutNotification"
+let userDidTweetNotification = "userDidTweetNotification"
 
 class User: NSObject {
 
@@ -44,6 +44,10 @@ class User: NSObject {
         
         followingCount = dictionary["friends_count"] as? Int
         followerCount = dictionary["followers_count"] as? Int
+    }
+    
+    func tweeted() {
+        NSNotificationCenter.defaultCenter().postNotificationName(userDidTweetNotification, object: nil)
     }
     
     static let userDidLogoutNotification = "UserDidLogout"

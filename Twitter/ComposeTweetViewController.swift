@@ -86,7 +86,6 @@ class ComposeTweetViewController: UIViewController, UITextViewDelegate {
         }*/
         
         TwitterClient.sharedInstance.postTweet(tweetStatus)
-        //User.currentUser.tweeted()
         
         dismissViewControllerAnimated(true, completion: nil)
     }
